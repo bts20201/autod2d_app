@@ -58,9 +58,11 @@ class _MainNavigationState extends State<MainNavigation> {
     PostListPage(),
   ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+@override
+Widget build(BuildContext context) {
+  return WillPopScope(
+    onWillPop: () async => false,
+    child: Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -77,8 +79,10 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
         ],
       ),
-    );
-  }
+    ), // <- closing for Scaffold
+  );     // <- closing for WillPopScope
+}
+
 }
 
 class WebViewContainer extends StatefulWidget {
