@@ -9,6 +9,7 @@ class ListingsPage extends StatefulWidget {
 
 class _ListingsPageState extends State<ListingsPage> {
   List posts = [];
+  String errorMessage = '';
 
   @override
   void initState() {
@@ -19,26 +20,29 @@ class _ListingsPageState extends State<ListingsPage> {
   Future<void> fetchPosts() async {
     try {
       final response = await http.get(
-        Uri.parse('https://autod2d.live-website.com/wp-json/wp/v2/posts'),
+        Uri.parse('https://autod2d.live-website.com/wp-json/wp/v2/posts?_embed'),
       );
-
-      print("Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final List data = json.decode(response.body);
         setState(() {
           posts = data;
+          errorMessage = '';
         });
       } else {
-        print('Failed to load posts: ${response.reasonPhrase}');
+        setState(() {
+          errorMessage = 'Failed to load posts: ${response.reasonPhrase}';
+        });
       }
     } catch (e) {
-      print('Error fetching posts: $e');
+      setState(() {
+        errorMessage = 'Error fetching posts: $e';
+      });
     }
   }
 
-  String _stripHtmlTags(String htmlString) {
+  String _stripHtmlTags(String? htmlString) {
+    if (htmlString == null) return '';
     final regex = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
     return htmlString.replaceAll(regex, '').trim();
   }
@@ -48,7 +52,9 @@ class _ListingsPageState extends State<ListingsPage> {
     return Scaffold(
       appBar: AppBar(title: Text('Listings')),
       body: posts.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? errorMessage.isNotEmpty
+              ? Center(child: Text(errorMessage))
+              : Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: posts.length,
               itemBuilder: (context, index) {
@@ -56,9 +62,22 @@ class _ListingsPageState extends State<ListingsPage> {
                 final title = post['title']['rendered'] ?? 'No title';
                 final excerpt = post['excerpt']['rendered'] ?? '';
 
+                final imageUrl = post['_embedded']?['wp:featuredmedia']?[0]?['source_url'];
+
                 return ListTile(
+                  leading: imageUrl != null
+                      ? Image.network(
+                          imageUrl,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        )
+                      : Icon(Icons.image_not_supported),
                   title: Text(title),
                   subtitle: Text(_stripHtmlTags(excerpt)),
+                  onTap: () {
+                    // You can navigate to a detail view or webview here
+                  },
                 );
               },
             ),

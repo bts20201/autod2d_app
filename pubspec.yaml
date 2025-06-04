@@ -16,6 +16,7 @@ dependencies:
   transparent_image: ^2.0.0
   webview_flutter: ^4.2.2
   url_launcher: ^6.2.5
+  flutter_dotenv: ^5.1.0   # ✅ NEW LINE
 
 dev_dependencies:
   flutter_test:

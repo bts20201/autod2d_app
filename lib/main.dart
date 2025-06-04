@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 void main() => runApp(MyApp());
 
@@ -58,31 +57,30 @@ class _MainNavigationState extends State<MainNavigation> {
     PostListPage(),
   ];
 
-@override
-Widget build(BuildContext context) {
-  return WillPopScope(
-    onWillPop: () async => false,
-    child: Scaffold(
-      body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: Colors.blueGrey,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Website',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Listings',
-          ),
-        ],
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: _pages[_currentIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          selectedItemColor: Colors.blueGrey,
+          onTap: (index) => setState(() => _currentIndex = index),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Website',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list),
+              label: 'Listings',
+            ),
+          ],
+        ),
       ),
-    ), // <- closing for Scaffold
-  );     // <- closing for WillPopScope
-}
-
+    );
+  }
 }
 
 class WebViewContainer extends StatefulWidget {
@@ -96,10 +94,6 @@ class _WebViewContainerState extends State<WebViewContainer> {
   @override
   void initState() {
     super.initState();
-
-    if (Platform.isAndroid) {
-       }
-
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse('https://autod2d.live-website.com'));
